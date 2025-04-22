@@ -1,0 +1,16 @@
+output/
+.cache/
+.hydra/
+.DS_Store
+.idea/
+.vscode/
+outputs/
+__pycache__/
+data/
+evaluation/
+generated-data/
+scripts/DPO-Training.sh
+scripts/TIS-DPO.sh
+models/
+datasets/
+examples/

@@ -1,0 +1,9 @@
+** DPO:
+python -u train.py \
+  model=gpt2 \
+  model.name_or_path=model_hub/gpt2_120M/ \
+  loss=dpo \
+  base_data_dir=data \
+  datasets='["Ultrachat200k/DPO"]'
+
+** WSPIN: python -u train.py model=gpt2 model.name_or_path=model_hub/gpt2_120M/
