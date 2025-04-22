@@ -10,6 +10,7 @@ def parse_args():
     p.add_argument('--model',        type=str,   required=True)
     p.add_argument('--input_dir',    type=str,   required=True)
     p.add_argument('--output_dir',   type=str,   required=True)
+    p.add_argument('--output_dir2',   type=str,  default="tue",   required=False)
     p.add_argument('--data_frac',    type=int,   default=0)
     p.add_argument('--frac_len',     type=int,   default=0)
     p.add_argument('--batch_size',   type=int,   default=32)
@@ -82,8 +83,20 @@ def main():
 
     out_dir = Path(args.output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
-    fname = f"{args.data_frac}_{args.split}.jsonl"
+    if args.frac_len > 60000:
+        fname = f"{args.split}.jsonl"
+    else:
+        fname = f"{args.split}_{args.data_frac}.jsonl"
     write_jsonl(out_dir / fname, items)
+
+    if args.output_dir2 != 'tue':
+        out_dir2 = Path(args.output_dir2)
+        out_dir2.mkdir(parents=True, exist_ok=True)
+        if args.frac_len > 60000:
+            fname = f"{args.split}.jsonl"
+        else:
+            fname = f"{args.split}_{args.data_frac}.jsonl"
+        write_jsonl(out_dir2 / fname, items)
 
 if __name__ == '__main__':
     main()

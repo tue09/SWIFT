@@ -193,11 +193,10 @@ def calculate_probability_differences(model_1, model_2, tokenizer, prompts_1, pr
     
     return all_weights, all_explain_data
 
-def calculate_probability_differences_SWPIN(model_1, model_2, tokenizer_1, tokenizer_2, prompts_1, prompts_2, responses, batch_size=8, device=None, process_id=None):
-    max_new_tokens_1 = 512
-    max_new_tokens_2 = 256
-    max_seq_len_1 = 2048
-    max_seq_len_2 = 1024
+def calculate_probability_differences_SWPIN(model_1, model_2, max_seq_len_2, max_prompt_length_2, tokenizer_1, tokenizer_2, prompts_1, prompts_2, responses, batch_size=8, device=None, process_id=None):
+    max_new_tokens_2 = 256 # = max_seq_len_2 - max_prompt_length_2
+    max_seq_len_1 = 2048 # = 2 * max_seq_len_2
+    # max_seq_len_2 = 1024 
     allow_length = max_seq_len_2 - max_new_tokens_2
     all_weights = []
     all_explain_data = []
@@ -312,7 +311,7 @@ def load_jsonl(file_path):
     with open(file_path, 'r') as f:
         return [json.loads(line) for line in f]
 
-def process_dataset_shard(gpu_id, input_file, model_name_1, model_name_2, model1_template, model2_template, data_shard, batch_size=8):
+def process_dataset_shard(gpu_id, max_seq_len_2, max_prompt_length_2, input_file, model_name_1, model_name_2, model1_template, model2_template, data_shard, batch_size=8):
     # Set the GPU device - directly select device instead of using environment variable
     device = torch.device(f"cuda:{gpu_id}" if torch.cuda.is_available() else "cpu")
     print(f"Process using device: {device}")
@@ -337,11 +336,11 @@ def process_dataset_shard(gpu_id, input_file, model_name_1, model_name_2, model1
     
     # Pass the device and process ID to calculate_probability_differences
     rejected_weights, _ = calculate_probability_differences_SWPIN(
-        model_1, model_2, tokenizer_1, tokenizer_2, prompts1, prompts2, rejected_responses, 
+        model_1, model_2, max_seq_len_2, max_prompt_length_2, tokenizer_1, tokenizer_2, prompts1, prompts2, rejected_responses, 
         batch_size=batch_size, device=device, process_id=gpu_id
     )
     chosen_weights, _ = calculate_probability_differences_SWPIN(
-        model_1, model_2, tokenizer_1, tokenizer_2, prompts1, prompts2, chosen_responses, 
+        model_1, model_2, max_seq_len_2, max_prompt_length_2, tokenizer_1, tokenizer_2, prompts1, prompts2, chosen_responses, 
         batch_size=batch_size, device=device, process_id=gpu_id
     )
     
@@ -386,6 +385,8 @@ def parallel_process_file(file_path, args):
     shards = shards[:num_gpus]  # Make sure we don't have more shards than GPUs
     print(f"Split data into {len(shards)} shards")
     
+    max_seq_len_2 = args.max_length
+    max_prompt_length_2 = args.max_prompt_length
     # Force sequential or handle single shard case
     if args.force_sequential or len(shards) == 1:
         # Sequential processing
@@ -393,7 +394,7 @@ def parallel_process_file(file_path, args):
         results = []
         for i in range(len(shards)):
             result = process_dataset_shard(
-                i % available_gpus, file_path, args.model_name_1, args.model_name_2,
+                i % available_gpus, max_seq_len_2, max_prompt_length_2, file_path, args.model_name_1, args.model_name_2,
                 args.model1_template, args.model2_template, shards[i], args.batch_size
             )
             results.append(result)
@@ -407,7 +408,7 @@ def parallel_process_file(file_path, args):
             for i in range(len(shards)):
                 result = pool.apply_async(
                     process_dataset_shard,
-                    args=(i % available_gpus, file_path, args.model_name_1, args.model_name_2, 
+                    args=(i % available_gpus, max_seq_len_2, max_prompt_length_2, file_path, args.model_name_1, args.model_name_2, 
                           args.model1_template, args.model2_template, shards[i], args.batch_size)
                 )
                 results.append(result)
@@ -447,6 +448,10 @@ def main():
                         help='Input directory containing JSONL files.')
     parser.add_argument('--output_dir', type=str, required=True,
                         help='Output directory for processed files.')
+    parser.add_argument('--max_length', type=int, default=1024,
+                        help='Max length for prompt + respose.')
+    parser.add_argument('--max_prompt_length', type=int, default=768,
+                        help='Max prompt length.')
     parser.add_argument('--batch_size', type=int, default=4,
                         help='Batch size for processing.')
     parser.add_argument('--num_gpus', type=int, default=8,
