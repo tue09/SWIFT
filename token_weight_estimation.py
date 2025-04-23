@@ -10,6 +10,10 @@ import multiprocessing as mp
 from functools import partial
 import time
 
+def read_jsonl(path):
+    with open(path, 'r') as f:
+        return [json.loads(l) for l in f]
+
 bnb_config = BitsAndBytesConfig(
     load_in_8bit=True,
     llm_int8_threshold=6.0
@@ -486,6 +490,23 @@ def main():
     print("Processed files:")
     for file in processed_files:
         print(f"  {file}")
+    
+    print("***** Preprocess ... *****")
+    for file in processed_files:
+        data = read_jsonl(file)
+        data_list = []
+        for i in range(len(data)):
+            if (len(data[i]['prompt']) > 0) and (len(data[i]['chosen']) > 0) and (len(data[i]['rejected']) > 0):
+                data_list.append({'prompt': data[i]['prompt'],
+                                'chosen': data[i]['chosen'],
+                                'rejected': data[i]['rejected']})
+
+        output_path = file
+        with open(output_path, "w", encoding="utf-8") as file:
+            for item in data_list:
+                file.write(json.dumps(item, ensure_ascii=False) + "\n")
+
+        print(f"Done with {len(data_list)} sample in {output_path} while before is {len(data)}")
 
 if __name__ == "__main__":
     main() 
