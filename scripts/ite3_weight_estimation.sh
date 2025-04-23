@@ -8,7 +8,7 @@ model2_template="normal"
 batch_size=8
 num_gpus=1
 max_length=1024
-max_prompt_length=768
+max_prompt_length=512
 force_sequential=false  # Set to true if multiprocessing causes issues
 # Create output directory if it doesn't exist
 # mkdir -p $output_dir

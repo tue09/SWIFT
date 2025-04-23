@@ -129,7 +129,7 @@ python -u train.py \
 python -u train.py \
   model=qwen \
   model.name_or_path=models/Qwen1.5-1.8B/SFT/ \
-  loss=tis-dpo \
+  loss=tisdpo \
   base_data_dir=data \
   datasets='["Ultrachat200k/WSPIN/ite0"]'
 ```
@@ -168,7 +168,7 @@ python -u train.py \
 python -u train.py \
   model=qwen \
   model.name_or_path=model_hub/Qwen1.5-1.8B/WSPIN/ite0 \
-  loss=tis-dpo \
+  loss=tisdpo \
   base_data_dir=data \
   datasets='["Ultrachat200k/WSPIN/ite0","Ultrachat200k/WSPIN/ite1"]'
 ```
@@ -207,7 +207,7 @@ python -u train.py \
 python -u train.py \
   model=qwen \
   model.name_or_path=model_hub/Qwen1.5-1.8B/WSPIN/ite1 \
-  loss=tis-dpo \
+  loss=tisdpo \
   base_data_dir=data \
   datasets='["Ultrachat200k/WSPIN/ite1","Ultrachat200k/WSPIN/ite2"]'
 ```
@@ -246,7 +246,7 @@ python -u train.py \
 python -u train.py \
   model=qwen \
   model.name_or_path=model_hub/Qwen1.5-1.8B/WSPIN/ite2 \
-  loss=tis-dpo \
+  loss=tisdpo \
   base_data_dir=data \
   datasets='["Ultrachat200k/WSPIN/ite2","Ultrachat200k/WSPIN/ite3"]'
 ```

@@ -2,11 +2,11 @@
 set -euo pipefail
 
 MODEL="model_hub/Qwen1.5-1.8B/SFT"
-INPUT="data/Ultrachat200k/SFT/train.jsonl"
+INPUT="data/Ultrachat200k/SFT/trainSFT.jsonl"
 OUTDIR="data/Ultrachat200k/SPIN/ite0"
 OUTDIR_2="data/Ultrachat200k/WSPIN/ite0"
 BATCH=8
-MAX_NEW=256
+MAX_NEW=512
 FRAC_LEN=1000000
 
 # loop over data_frac = 0..70

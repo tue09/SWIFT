@@ -5,7 +5,7 @@ MODEL="model_hub/Qwen1.5-1.8B/SPIN/ite1"
 INPUT="data/Ultrachat200k/SFT/trainSFT.jsonl"
 OUTDIR="data/Ultrachat200k/SPIN/ite2"
 BATCH=8
-MAX_NEW=256
+MAX_NEW=512
 FRAC_LEN=1000000
 
 # loop over data_frac = 0..70
