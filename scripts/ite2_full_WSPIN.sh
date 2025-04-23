@@ -1,22 +1,19 @@
 #! /bin/bash
 set -euo pipefail
 
-MODEL="model_hub/Qwen1.5-1.8B/SFT"
+MODEL="model_hub/Qwen1.5-1.8B/WSPIN/ite1"
 INPUT="data/Ultrachat200k/SFT/trainSFT.jsonl"
-OUTDIR="data/Ultrachat200k/SPIN/ite0"
-OUTDIR_2="data/Ultrachat200k/WSPIN/ite0"
+OUTDIR="data/Ultrachat200k/WSPIN/ite2"
 BATCH=8
 MAX_NEW=512
 FRAC_LEN=1000000
 
-#### Gen sample
 # loop over data_frac = 0..70
 for frac in {0..1}; do
   python generate.py \
     --model       "$MODEL" \
     --input_dir   "$INPUT" \
     --output_dir  "$OUTDIR" \
-    --output_dir2  "$OUTDIR_2" \
     --batch_size  $BATCH \
     --max_new_tokens $MAX_NEW \
     --data_frac   $frac \
@@ -24,11 +21,11 @@ for frac in {0..1}; do
     --split       train
 done
 
-#### Compute Important weight
-model_name_1="model_hub/zephyr-7b-sft-full/"
-model_name_2="model_hub/Qwen1.5-1.8B/SFT"
-input_dir="data/Ultrachat200k/WSPIN/ite0"
-output_dir="data/Ultrachat200k/WSPIN/ite0"
+
+model_name_1="model_hub/zephyr-7b-sft-full"
+model_name_2="model_hub/Qwen1.5-1.8B/WSPIN/ite1"
+input_dir="data/Ultrachat200k/WSPIN/ite2"
+output_dir="data/Ultrachat200k/WSPIN/ite2"
 model1_template="normal"
 model2_template="normal"
 batch_size=8
@@ -41,18 +38,10 @@ force_sequential=false  # Set to true if multiprocessing causes issues
 # Run the parallel processing script
 python token_weight_estimation.py   --model_name_1 $model_name_1   --model_name_2 $model_name_2   --model1_template $model1_template   --model2_template $model2_template   --input_dir $input_dir   --output_dir $output_dir  --max_length $max_length  --max_prompt_length $max_prompt_length   --batch_size $batch_size   --num_gpus $num_gpus   $(if $force_sequential; then echo "--force_sequential"; fi) 
 
-#### Train SPIN
-python -u train.py \
-  model=qwen \
-  model.name_or_path=models/Qwen1.5-1.8B/SFT/ \
-  loss=dpo \
-  base_data_dir=data \
-  datasets='["Ultrachat200k/SPIN/ite0"]'
 
-#### Train WSPIN
 python -u train.py \
   model=qwen \
-  model.name_or_path=models/Qwen1.5-1.8B/SFT/ \
+  model.name_or_path=model_hub/Qwen1.5-1.8B/WSPIN/ite1 \
   loss=tisdpo \
   base_data_dir=data \
-  datasets='["Ultrachat200k/WSPIN/ite0"]'
+  datasets='["Ultrachat200k/WSPIN/ite1","Ultrachat200k/WSPIN/ite2"]'
