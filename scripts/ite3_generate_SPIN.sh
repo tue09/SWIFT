@@ -2,7 +2,7 @@
 set -euo pipefail
 
 MODEL="model_hub/Qwen1.5-1.8B/SPIN/ite2"
-INPUT="data/Ultrachat200k/SPIN/ite2/train.jsonl"
+INPUT="data/Ultrachat200k/SFT/trainSFT.jsonl"
 OUTDIR="data/Ultrachat200k/SPIN/ite3"
 BATCH=8
 MAX_NEW=256

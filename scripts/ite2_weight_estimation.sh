@@ -1,5 +1,5 @@
 #! /bin/bash
-model_name_1="model_hub/zephyr-7b-sft-full/"
+model_name_1="model_hub/zephyr-7b-sft-full"
 model_name_2="model_hub/Qwen1.5-1.8B/WSPIN/ite1"
 input_dir="data/Ultrachat200k/WSPIN/ite2"
 output_dir="data/Ultrachat200k/WSPIN/ite2"
