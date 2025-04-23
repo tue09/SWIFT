@@ -37,7 +37,7 @@ Weighted Self‑Play Fine‑Tuning (WSPIN) builds on the Self-Play Fine‑Tuning
 1. **Clone the repository**:
 
    ```bash
-   git clone https://github.com/your-org/WSPIN.git
+   git clone https://github.com/tue09/WSPIN.git
    cd WSPIN
    ```
 
@@ -46,12 +46,6 @@ Weighted Self‑Play Fine‑Tuning (WSPIN) builds on the Self-Play Fine‑Tuning
    ```bash
    conda env create -f environment.yml
    conda activate wspin
-   ```
-
-3. **Install requirements**:
-
-   ```bash
-   pip install -r requirements.txt
    ```
 
 ## 📊 Data Preparation
@@ -69,6 +63,7 @@ Ensure the following directories exist:
 data/
 ├── Ultrachat200k/
 │   ├── DPO/
+│   ├── SFT/
 │   ├── SPIN/
 │   └── WSPIN/
 ```
