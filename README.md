@@ -50,12 +50,7 @@ Weighted Self‑Play Fine‑Tuning (WSPIN) builds on the Self-Play Fine‑Tuning
 
 ## 📊 Data Preparation
 
-Download the Ultrachat200k dataset from Hugging Face and organize under `data/`:
-
-```bash
-huggingface-cli download --resume-download Ultrachat200k/DPO --local-dir data/Ultrachat200k/DPO --repo-type dataset
-git lfs pull --include "Ultrachat200k/SPIN/*"
-```
+Download the Ultrachat200k dataset for SFT and DPO from [Link](https://drive.google.com/drive/folders/1BpO5SBvHFPsdW2DAjHuhpBn9xTsHWIDa?usp=sharing) and organize under `data/`:
 
 Ensure the following directories exist:
 
@@ -70,15 +65,15 @@ data/
 
 ## 🤖 Model Preparation
 
-We use Qwen1.5-1.8B as the base LLM.
+We use Qwen1.5-1.8B as the base LLM and zephyr-7b-sft-full as teacher LLM.
 
-```bash
+<!-- ```bash
 huggingface-cli download --resume-download Qwen/Qwen1.5-1.8B --local-dir models/Qwen1.5-1.8B
-```
+``` -->
 
 ## 🚀 Training Pipeline
 
-### Part 0: Download Checkpoint
+### Part 0: Download Teacher Checkpoint
 
 Download any provided starting checkpoint:
 
