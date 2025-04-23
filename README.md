@@ -100,118 +100,35 @@ python -u train.py \
 
 ### Part 2: Iteration 0 (ITE0)
 
-#### Step 2.1: Generate Samples for ITE0
-
 ```bash
-bash scripts/ite0_generate.sh
+bash scripts/ite0_full.sh
 ```
-
-#### Step 2.2: Compute Token Importance Weights
-
-```bash
-bash scripts/ite0_weight_estimation.sh
-```
-
-#### Step 2.3: Train SPIN (Vanilla) for ITE0
-
-```bash
-python -u train.py \
-  model=qwen \
-  model.name_or_path=models/Qwen1.5-1.8B/SFT/ \
-  loss=dpo \
-  base_data_dir=data \
-  datasets='["Ultrachat200k/SPIN/ite0"]'
-```
-
-#### Step 2.4: Train WSPIN for ITE0
-
-```bash
-python -u train.py \
-  model=qwen \
-  model.name_or_path=models/Qwen1.5-1.8B/SFT/ \
-  loss=tisdpo \
-  base_data_dir=data \
-  datasets='["Ultrachat200k/WSPIN/ite0"]'
-```
-
+#### Note: 
+1. please move SPIN checkpoint to directory model_hub/Qwen1.5-1.8B/SPIN/ite0
+2. please move WSPIN checkpoint to directory model_hub/Qwen1.5-1.8B/WSPIN/ite0
 ---
 
 ### Part 3: Iteration 1 (ITE1)
 
-#### Step 3.1: Generate Samples for ITE1
 
 ```bash
-bash scripts/ite1_generate_SPIN.sh
-bash scripts/ite1_generate_WSPIN.sh
+bash scripts/ite1_full_SPIN.sh
+bash scripts/ite1_full_WSPIN.sh
 ```
-
-#### Step 3.2: Compute Token Importance Weights
-
-```bash
-bash scripts/ite1_weight_estimation.sh
-```
-
-#### Step 3.3: Train SPIN for ITE1
-
-```bash
-python -u train.py \
-  model=qwen \
-  model.name_or_path=model_hub/Qwen1.5-1.8B/SPIN/ite0 \
-  loss=dpo \
-  base_data_dir=data \
-  datasets='["Ultrachat200k/SPIN/ite0","Ultrachat200k/SPIN/ite1"]'
-```
-
-#### Step 3.4: Train WSPIN for ITE1
-
-```bash
-python -u train.py \
-  model=qwen \
-  model.name_or_path=model_hub/Qwen1.5-1.8B/WSPIN/ite0 \
-  loss=tisdpo \
-  base_data_dir=data \
-  datasets='["Ultrachat200k/WSPIN/ite0","Ultrachat200k/WSPIN/ite1"]'
-```
-
+#### Note: 
+1. please move SPIN checkpoint to directory model_hub/Qwen1.5-1.8B/SPIN/ite1
+2. please move WSPIN checkpoint to directory model_hub/Qwen1.5-1.8B/WSPIN/ite1
 ---
 
 ### Part 4: Iteration 2 (ITE2)
 
-#### Step 4.1: Generate Samples for ITE2
-
 ```bash
-bash scripts/ite2_generate_SPIN.sh
-bash scripts/ite2_generate_WSPIN.sh
+bash scripts/ite2_full_SPIN.sh
+bash scripts/ite2_full_WSPIN.sh
 ```
-
-#### Step 4.2: Compute Token Importance Weights
-
-```bash
-bash scripts/ite2_weight_estimation.sh
-```
-
-#### Step 4.3: Train SPIN for ITE2
-
-```bash
-python -u train.py \
-  model=qwen \
-  model.name_or_path=model_hub/Qwen1.5-1.8B/SPIN/ite1 \
-  loss=dpo \
-  base_data_dir=data \
-  datasets='["Ultrachat200k/SPIN/ite1","Ultrachat200k/SPIN/ite2"]'
-```
-
-#### Step 4.4: Train WSPIN for ITE2
-
-```bash
-python -u train.py \
-  model=qwen \
-  model.name_or_path=model_hub/Qwen1.5-1.8B/WSPIN/ite1 \
-  loss=tisdpo \
-  base_data_dir=data \
-  datasets='["Ultrachat200k/WSPIN/ite1","Ultrachat200k/WSPIN/ite2"]'
-```
-
+#### Note: 
+1. please move SPIN checkpoint to directory model_hub/Qwen1.5-1.8B/SPIN/ite2
+2. please move WSPIN checkpoint to directory model_hub/Qwen1.5-1.8B/WSPIN/ite2
 ---
 
 ### Part 5: Iteration 3 (ITE3)
@@ -219,38 +136,12 @@ python -u train.py \
 #### Step 5.1: Generate Samples for ITE3
 
 ```bash
-bash scripts/ite3_generate_SPIN.sh
-bash scripts/ite3_generate_WSPIN.sh
+bash scripts/ite3_full_SPIN.sh
+bash scripts/ite3_full_WSPIN.sh
 ```
-
-#### Step 5.2: Compute Token Importance Weights
-
-```bash
-bash scripts/ite3_weight_estimation.sh
-```
-
-#### Step 5.3: Train SPIN for ITE3
-
-```bash
-python -u train.py \
-  model=qwen \
-  model.name_or_path=model_hub/Qwen1.5-1.8B/SPIN/ite2 \
-  loss=dpo \
-  base_data_dir=data \
-  datasets='["Ultrachat200k/SPIN/ite2","Ultrachat200k/SPIN/ite3"]'
-```
-
-#### Step 5.4: Train WSPIN for ITE3
-
-```bash
-python -u train.py \
-  model=qwen \
-  model.name_or_path=model_hub/Qwen1.5-1.8B/WSPIN/ite2 \
-  loss=tisdpo \
-  base_data_dir=data \
-  datasets='["Ultrachat200k/WSPIN/ite2","Ultrachat200k/WSPIN/ite3"]'
-```
-
+#### Note: 
+1. please move SPIN checkpoint to directory model_hub/Qwen1.5-1.8B/SPIN/ite3
+2. please move WSPIN checkpoint to directory model_hub/Qwen1.5-1.8B/WSPIN/ite3
 ---
 
 ## 📝 Repository Structure
@@ -266,6 +157,8 @@ python -u train.py \
 │   ├── ite*_weight_estimation.sh # Token weight estimators
 │   └── ite*_generate_SPIN.sh
 ├── train.py                  # Core training script
+├── generate.py               # generate response 
+├── token_weight_estimation.py # compute token weight
 ├── utils.py                  # Helper functions
 ├── preference_datasets.py    # Data loaders and transforms
 ├── trainers.py               # SPIN and WSPIN implementations
@@ -273,6 +166,7 @@ python -u train.py \
 ├── data/                     # Dataset directory
 │   └── Ultrachat200k/
 │       ├── DPO/
+│       ├── SFT/
 │       ├── SPIN/
 │       └── WSPIN/
 └── output/                   # Model checkpoints and logs
