@@ -3,7 +3,7 @@ set -euo pipefail
 
 # MODEL="model_hub/Qwen1.5-1.8B/SFT"
 # INPUT="data/Ultrachat200k/SFT/trainSFT.jsonl"
-# OUTDIR="data/Ultrachat200k/SPIN/ite0/data"
+# OUTDIR="data/Ultrachat200k/SPIN/ite0/train"
 # BATCH=8
 # MAX_NEW=512
 # FRAC_LEN=1000000
@@ -33,7 +33,7 @@ python -u train.py \
 
 MODEL="model_hub/Qwen1.5-1.8B/SPIN/ite0"
 INPUT="data/Ultrachat200k/SFT/trainSFT.jsonl"
-OUTDIR="data/Ultrachat200k/SPIN/ite1/data"
+OUTDIR="data/Ultrachat200k/SPIN/ite1/train"
 BATCH=8
 MAX_NEW=512
 FRAC_LEN=1000000
@@ -63,7 +63,7 @@ python -u train.py \
 
 MODEL="model_hub/Qwen1.5-1.8B/SPIN/ite1"
 INPUT="data/Ultrachat200k/SFT/trainSFT.jsonl"
-OUTDIR="data/Ultrachat200k/SPIN/ite2/data"
+OUTDIR="data/Ultrachat200k/SPIN/ite2/train"
 BATCH=8
 MAX_NEW=512
 FRAC_LEN=1000000
@@ -94,7 +94,7 @@ python -u train.py \
 
 MODEL="model_hub/Qwen1.5-1.8B/SPIN/ite2"
 INPUT="data/Ultrachat200k/SFT/trainSFT.jsonl"
-OUTDIR="data/Ultrachat200k/SPIN/ite3/data"
+OUTDIR="data/Ultrachat200k/SPIN/ite3/train"
 BATCH=8
 MAX_NEW=512
 FRAC_LEN=1000000

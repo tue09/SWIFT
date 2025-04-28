@@ -9,7 +9,6 @@ dependencies:
   - pip=23.0
   - cudatoolkit=11.8
   - pytorch>=2.1.0 
-  - torchvision
   - numpy
   - pip:
     - -i https://pypi.tuna.tsinghua.edu.cn/simple
@@ -26,3 +25,6 @@ dependencies:
     - sentencepiece>=0.1.99
     - protobuf>=4.23.3
     - fschat[model_worker,webui]
+    - vllm
+    - torchaudio
+    - torchvision

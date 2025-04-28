@@ -79,9 +79,8 @@ def main(config: DictConfig):
 
     # Now resolve hydra references with the updated transform config
     OmegaConf.resolve(config)
-    config.max_length = 1024
-    config.max_prompt_length = 1024 - 256
-    config.wandb.enabled = False
+    # config.max_length = 1024
+    # config.max_prompt_length = 1024 - 256
     # config.model="gpt2"
     # config.model.name_or_path="model_hub/gpt2_120M/"
     config.loss.beta = 0.1
