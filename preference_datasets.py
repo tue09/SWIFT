@@ -376,7 +376,6 @@ def get_batch_iterator(names: List[str],
                 flat_data.append((prompt, data['responses'], data['pairs'], data['sft_target'], data['rejected_weight'], data['chosen_weight'], truncation_mode))
 
     collate_fn = get_collate_fn(tokenizer)
-    print(f'INNN {split}')
     epoch_idx = 0
     example_idx = 0
     done = False

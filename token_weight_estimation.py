@@ -1,6 +1,6 @@
 import torch
 import json
-from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
+from transformers import AutoTokenizer, AutoModelForCausalLM
 from collections import defaultdict
 from tqdm import tqdm
 import argparse
@@ -13,11 +13,6 @@ import time
 def read_jsonl(path):
     with open(path, 'r') as f:
         return [json.loads(l) for l in f]
-
-bnb_config = BitsAndBytesConfig(
-    load_in_8bit=True,
-    llm_int8_threshold=6.0
-)
 
 promt_dict = {
     "harmless": "You are an harmless assistant. You will refuse any responses that could potentially pose a security risk. {}",
@@ -198,10 +193,10 @@ def calculate_probability_differences(model_1, model_2, tokenizer, prompts_1, pr
     return all_weights, all_explain_data
 
 def calculate_probability_differences_SWPIN(model_1, model_2, max_seq_len_2, max_prompt_length_2, tokenizer_1, tokenizer_2, prompts_1, prompts_2, responses, batch_size=8, device=None, process_id=None):
-    max_new_tokens_2 = 256 # = max_seq_len_2 - max_prompt_length_2
-    max_seq_len_1 = 2048 # = 2 * max_seq_len_2
+    max_new_tokens_2 = max_seq_len_2 - max_prompt_length_2# = max_seq_len_2 - max_prompt_length_2
+    max_seq_len_1 = 2 * max_seq_len_2 # = 2 * max_seq_len_2
     # max_seq_len_2 = 1024 
-    allow_length = max_seq_len_2 - max_new_tokens_2
+    allow_length = max_prompt_length_2
     all_weights = []
     all_explain_data = []
     
@@ -327,8 +322,8 @@ def process_dataset_shard(gpu_id, max_seq_len_2, max_prompt_length_2, input_file
     tokenizer_2.pad_token = tokenizer_2.eos_token
     
     # Load models to the specific device
-    model_1 = AutoModelForCausalLM.from_pretrained(model_name_1, quantization_config=bnb_config, device_map=device, torch_dtype=torch.float16)
-    model_2 = AutoModelForCausalLM.from_pretrained(model_name_2, quantization_config=bnb_config, device_map=device, torch_dtype=torch.float16)
+    model_1 = AutoModelForCausalLM.from_pretrained(model_name_1, device_map=device, torch_dtype=torch.float16)
+    model_2 = AutoModelForCausalLM.from_pretrained(model_name_2, device_map=device, torch_dtype=torch.float16)
     
     prompts1 = [promt_dict[model1_template].format(item['prompt']) for item in data_shard]
     prompts2 = [promt_dict[model2_template].format(item['prompt']) for item in data_shard]
@@ -499,7 +494,9 @@ def main():
             if (len(data[i]['prompt']) > 0) and (len(data[i]['chosen']) > 0) and (len(data[i]['rejected']) > 0):
                 data_list.append({'prompt': data[i]['prompt'],
                                 'chosen': data[i]['chosen'],
-                                'rejected': data[i]['rejected']})
+                                'rejected': data[i]['rejected'],
+                                'chosen_weight': data[i]['chosen_weight'],
+                                'rejected_weight': data[i]['rejected_weight']})
 
         output_path = file
         with open(output_path, "w", encoding="utf-8") as file:

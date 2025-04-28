@@ -16,7 +16,9 @@ def parse_arguments():
     parser.add_argument('--model', type=str, default='model_hub/gpt2_120M')
     parser.add_argument('--data_frac', type=int, default=0)
     parser.add_argument('--frac_len', type=int, default=0)
+    parser.add_argument('--max_new_tokens', type=int, default=256)
     parser.add_argument('--output_dir', type=str, default='data/Ultrachat200k/ite0')
+    parser.add_argument('--output_dir2',   type=str,  default="tue",   required=False)
     parser.add_argument('--world_size', type=int, default=1) # controls the number of gpus vLLM is allowed to use
     parser.add_argument('--input_dir', type=str, default='data/Ultrachat200k/trainSFT.jsonl')
     parser.add_argument('--split', type=str, default='train')
@@ -42,9 +44,12 @@ def main():
     llm = LLM(
         model=model_path,
         tensor_parallel_size=world_size,
+        dtype="float16",
+        max_model_len=4096,     
+        gpu_memory_utilization=0.9
     )
 
-    sampling_params = SamplingParams(temperature=1.0, top_p=1.0, max_tokens=256)
+    sampling_params = SamplingParams(temperature=1.0, top_p=1.0, max_tokens=args.max_new_tokens)
 
     # load data
     # data = load_dataset(args.input_dir, split=args.split)

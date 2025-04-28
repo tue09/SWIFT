@@ -15,7 +15,6 @@ from typing import Optional, Set, List, Union
 import resource
 from transform_config import TransformConfig, get_transform_config
 
-
 OmegaConf.register_new_resolver("get_local_run_dir", lambda exp_name, local_dir: get_local_run_dir(exp_name, local_dir))
 OmegaConf.register_new_resolver("build_exp_name", lambda loss_name, model_name, datasets, reverse_dataset, transform: build_exp_name(loss_name, model_name, datasets, reverse_dataset, transform))
 
@@ -45,7 +44,7 @@ def worker_main(rank: int, world_size: int, config: DictConfig, policy: nn.Modul
     
     TrainerClass = getattr(trainers, config.trainer)
     print(f'Creating trainer on process {rank} with world size {world_size}')
-    trainer = TrainerClass(policy, config, config.seed, config.local_run_dir, reference_model=reference_model, 
+    trainer = TrainerClass(policy, config, config.seed, config.local_run_dir, config.ckpt_dir, reference_model=reference_model, 
                          rank=rank, world_size=world_size, transform_config=transform_config)
 
     trainer.train()

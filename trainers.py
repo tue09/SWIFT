@@ -312,7 +312,7 @@ def concatenated_inputs(batch: Dict[str, Union[List, torch.LongTensor]]) -> Dict
 
 
 class BasicTrainer(object):
-    def __init__(self, policy: nn.Module, config: DictConfig, seed: int, run_dir: str, reference_model: Optional[nn.Module] = None, rank: int = 0, world_size: int = 1, transform_config = None):
+    def __init__(self, policy: nn.Module, config: DictConfig, seed: int, run_dir: str, ckpt_dir: str, reference_model: Optional[nn.Module] = None, rank: int = 0, world_size: int = 1, transform_config = None):
         """A trainer for a language model, supporting either SFT or DPO training.
             
             If multiple GPUs are present, naively splits the model across them, effectively
@@ -323,6 +323,7 @@ class BasicTrainer(object):
         self.world_size = world_size
         self.config = config
         self.run_dir = run_dir
+        self.ckpt_dir = ckpt_dir
         self.base_data_dir = config.base_data_dir
 
         tokenizer_name_or_path = config.model.tokenizer_name_or_path or config.model.name_or_path
@@ -330,7 +331,6 @@ class BasicTrainer(object):
         self.tokenizer = transformers.AutoTokenizer.from_pretrained(tokenizer_name_or_path)
         if self.tokenizer.pad_token_id is None:
             self.tokenizer.pad_token_id = self.tokenizer.eos_token_id
-        
         data_iterator_kwargs = dict(
             names=config.datasets,
             tokenizer=self.tokenizer,
@@ -579,6 +579,7 @@ class BasicTrainer(object):
         last_log = None
 
         for batch in self.train_iterator:
+            if self.example_counter > 5: break
             # #### BEGIN EVALUATION ####
             # if self.example_counter % self.config.eval_every == 0 and (self.example_counter > 0 or self.config.do_first_eval):
             #     rank0_print(f'Running evaluation after {self.example_counter} train examples')
@@ -686,7 +687,7 @@ class BasicTrainer(object):
         """Write a checkpoint to disk."""
         if dir_name is None:
             dir_name = os.path.join(self.run_dir, f'LATEST')
-
+        dir_name = self.ckpt_dir
         os.makedirs(dir_name, exist_ok=True)
         output_path = os.path.join(dir_name, filename)
         rank0_print(f'writing checkpoint to {output_path}...')
@@ -702,7 +703,7 @@ class BasicTrainer(object):
             model_save_dir = os.path.join(self.run_dir, f'LATEST')
         else:
             model_save_dir = output_dir
-            
+        model_save_dir = self.ckpt_dir
         os.makedirs(model_save_dir, exist_ok=True)
         
         # Save model using transformers save_pretrained
@@ -720,14 +721,14 @@ class BasicTrainer(object):
 
 
 class FSDPTrainer(BasicTrainer):
-    def __init__(self, policy: nn.Module, config: DictConfig, seed: int, run_dir: str, reference_model: Optional[nn.Module] = None, rank: int = 0, world_size: int = 1, transform_config = None):
+    def __init__(self, policy: nn.Module, config: DictConfig, seed: int, run_dir: str, ckpt_dir: str, reference_model: Optional[nn.Module] = None, rank: int = 0, world_size: int = 1, transform_config = None):
         """A trainer subclass that uses PyTorch FSDP to shard the model across multiple GPUs.
         
            This trainer will shard both the policy and reference model across all available GPUs.
            Models are sharded at the block level, where the block class name is provided in the config.
         """
 
-        super().__init__(policy, config, seed, run_dir, reference_model, rank, world_size, transform_config=transform_config)
+        super().__init__(policy, config, seed, run_dir, ckpt_dir, reference_model, rank, world_size, transform_config=transform_config)
         assert config.model.block_name is not None, 'must specify model.block_name (e.g., GPT2Block or GPTNeoXLayer) for FSDP'
 
         wrap_class = get_block_class_from_model(policy, config.model.block_name)
@@ -826,13 +827,13 @@ class FSDPTrainer(BasicTrainer):
 
 
 class TensorParallelTrainer(BasicTrainer):
-    def __init__(self, policy, config, seed, run_dir, reference_model=None, rank=0, world_size=1, transform_config=None):
+    def __init__(self, policy, config, seed, run_dir, ckpt_dir: str, reference_model=None, rank=0, world_size=1, transform_config=None):
         """A trainer subclass that uses TensorParallel to shard the model across multiple GPUs.
 
            Based on https://github.com/BlackSamorez/tensor_parallel. Note sampling is extremely slow,
               see https://github.com/BlackSamorez/tensor_parallel/issues/66.
         """
-        super().__init__(policy, config, seed, run_dir, reference_model, rank, world_size, transform_config=transform_config)
+        super().__init__(policy, config, seed, run_dir, ckpt_dir, reference_model, rank, world_size, transform_config=transform_config)
         
         rank0_print('Sharding policy...')
         self.policy = tp.tensor_parallel(policy, sharded=True)
@@ -850,6 +851,7 @@ class TensorParallelTrainer(BasicTrainer):
             model_save_dir = os.path.join(self.run_dir, f'LATEST')
         else:
             model_save_dir = output_dir
+        model_save_dir = self.ckpt_dir
             
         os.makedirs(model_save_dir, exist_ok=True)
             
