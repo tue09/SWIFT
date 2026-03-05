@@ -6,7 +6,6 @@
   <img src="https://img.shields.io/badge/NeurIPS-2025%20Accepted-1f7a1f?style=flat-square" alt="NeurIPS 2025 Accepted">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-2f80ed?style=flat-square" alt="License"></a>
 </p>
-(base) clouduser@Metal-Cloud-GPU-H100-250522104857:/mnt/data/safetyCode/safety_code$ git remote -v
 
 <p align="center">
 SWIFT (Self-Play Weighted Fine-Tuning) extends self-play alignment with teacher-guided token-level importance weighting.
