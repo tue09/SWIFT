@@ -1,70 +1,69 @@
-# Token-Level Self-Play with Importance-Aware Guidance for Large Language Models
-<!-- 
-<div align="center">
-[![arXiv](https://img.shields.io/badge/arXiv-2401.01335-b31b1b.svg?style=flat)](https://arxiv.org/abs/2401.01335)  
-[![ICML](https://img.shields.io/badge/ICML-2025-blue.svg?style=flat)](https://proceedings.mlr.press/v202)  
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)  
-[![Python 3.8+](https://img.shields.io/badge/Python-3.8+-green.svg)](https://www.python.org/downloads/)  
-[![HuggingFace Datasets](https://img.shields.io/badge/🤗-Datasets-yellow.svg)](https://huggingface.co/datasets/Ultrachat200k)  
-[![HuggingFace Model](https://img.shields.io/badge/🤗-Model-yellow.svg)](https://huggingface.co/Qwen/Qwen1.5-1.8B)
-</div> -->
+<h1 align="center">SWIFT</h1>
+<p align="center"><strong>Token-Level Self-Play with Importance-Aware Guidance for Large Language Models</strong></p>
 
-## 🔍 Overview
-SWIFT (Self-Play Weighted Fine-Tuning) is a simple yet effective method for aligning large language models via token-level importance weighting.
+<p align="center">
+  <a href="https://openreview.net/pdf?id=3VvdoCcVPU"><img src="https://img.shields.io/badge/Paper-OpenReview-b31b1b?style=flat-square" alt="Paper"></a>
+  <img src="https://img.shields.io/badge/NeurIPS-2025%20Accepted-1f7a1f?style=flat-square" alt="NeurIPS 2025 Accepted">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-2f80ed?style=flat-square" alt="License"></a>
+</p>
+(base) clouduser@Metal-Cloud-GPU-H100-250522104857:/mnt/data/safetyCode/safety_code$ git remote -v
 
+<p align="center">
+SWIFT (Self-Play Weighted Fine-Tuning) extends self-play alignment with teacher-guided token-level importance weighting.
+</p>
 
+## Overview
 
-## 🔧 Installation
+SWIFT builds on SPIN and improves token-level learning signals during self-play fine-tuning.  
+Instead of treating every token equally, SWIFT uses token importance estimated from a stronger teacher model, enabling better alignment and stronger distillation behavior.
 
-1. **Create and activate the conda environment**:
+## Core Idea (from the paper)
 
-   ```bash
-   conda env create -f environment.yml
-   conda activate SWIFT
-   pip install -r requirements.txt
-   ```
+- Token-level weighting: focus optimization on more informative tokens.
+- Teacher-guided guidance: use a stronger model for token importance instead of direct logits matching.
+- Practical tokenizer mapping: transfer token weights across teacher/student tokenizers.
 
-## 📊 Data Preparation
+## Installation
 
-Download the Ultrachat200k dataset for SFT [Link SFT data](https://huggingface.co/datasets/UCLA-AGI/SPIN_iter1) and DPO from [Link DPO data](https://huggingface.co/datasets/HuggingFaceH4/ultrafeedback_binarized) and organize them under `data/`:
-
-Ensure the following directories exist:
-
+```bash
+conda env create -f environment.yml
+conda activate SWIFT
+pip install -r requirements.txt
 ```
+
+## Data Preparation
+
+Download:
+- SFT data: [Link SFT data](https://huggingface.co/datasets/UCLA-AGI/SPIN_iter1)
+- Preference data: [Link DPO data](https://huggingface.co/datasets/HuggingFaceH4/ultrafeedback_binarized)
+
+Organize under:
+
+```text
 data/
-├── Ultrachat200k/
-│   ├── DPO/
-│   ├── SFT/
-│   ├── SPIN/
-│   └── SWIFT/
+└── Ultrachat200k/
+    ├── DPO/
+    ├── SFT/
+    ├── SPIN/
+    └── SWIFT/
 ```
 
-## 🤖 Model Preparation
+## Training Pipeline
 
-We use Qwen1.5-1.8B and GPT2-1.5B as the base LLM and zephyr-7b-sft-full as teacher LLM.
-
-<!-- ```bash
-huggingface-cli download --resume-download Qwen/Qwen1.5-1.8B --local-dir models/Qwen1.5-1.8B
-``` -->
-
-## 🚀 Training Pipeline
-
-### Part 0: Download Base Model Checkpoint
-
-Download any provided starting checkpoint:
+### 1) Download Base Checkpoint
 
 ```bash
 python scripts/download.py
 ```
 
----
-
-### Part 1: SWIFT for Qwen1.5-1.8B
+### 2) Run Self-Play Training
 
 ```bash
 bash scripts/_SPIN_full.sh
 bash scripts/_SWIFT_full.sh
 ```
+
+(`_SWIFT_full.sh` is the Self-Play Weighted Fine-Tuning pipeline used for SWIFT in this repo.)
 
 ## Citation
 
@@ -77,7 +76,7 @@ bash scripts/_SWIFT_full.sh
 }
 ```
 
-## 📜 License
+## License
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the Apache License 2.0. See [LICENSE](LICENSE).
 
