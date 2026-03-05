@@ -16,7 +16,7 @@ SWIFT (Self-Play Weighted Fine-Tuning) extends self-play alignment with teacher-
 SWIFT builds on SPIN and improves token-level learning signals during self-play fine-tuning.  
 Instead of treating every token equally, SWIFT uses token importance estimated from a stronger teacher model, enabling better alignment and stronger distillation behavior.
 
-## Core Idea (from the paper)
+## Core Idea
 
 - Token-level weighting: focus optimization on more informative tokens.
 - Teacher-guided guidance: use a stronger model for token importance instead of direct logits matching.
